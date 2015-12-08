@@ -1,0 +1,6 @@
+---
+- name: restart nginx
+  service: name=nginx state=restarted enabled=yes
+      
+- name: Restart snmpd
+  service: name=snmpd state=restarted
