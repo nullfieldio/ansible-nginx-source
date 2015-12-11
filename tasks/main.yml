@@ -14,7 +14,6 @@
 - name: install required yum packages
   yum: name={{ item }} state=installed
   with_items:
-    - git
     - net-snmp 
     - net-snmp-utils
     - gmp-devel 
@@ -25,7 +24,6 @@
     - libxml2-devel 
     - freetds-devel 
     - pcre-devel 
-    - openldap-devel 
     - automake 
     - autoconf 
     - libtool 
@@ -34,14 +32,10 @@
     - perl
   sudo: yes
 
-- name: clone nginx-auth-ldap
-  git: repo=https://github.com/kvspb/nginx-auth-ldap.git dest={{ nginx_src_dir }}/nginx-auth-ldap
-  sudo: yes
-
 - name: install nginx
   command: creates={{ nginx_prefix }} chdir={{ nginx_src_dir }}/nginx-{{ nginx_version }} {{ item }}
   with_items:
-  - ./configure --add-module={{ nginx_src_dir }}/nginx-auth-ldap --prefix={{ nginx_prefix }} --with-http_ssl_module --with-http_stub_status_module
+  - ./configure --prefix={{ nginx_prefix }} --with-http_ssl_module --with-http_stub_status_module
   - make install
   sudo: yes
 
