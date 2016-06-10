@@ -27,3 +27,4 @@ License
 
 BSD
 
+[![Build Status](https://travis-ci.org/tobybro/ansible-nginx-source.svg?branch=master)](https://travis-ci.org/tobybro/ansible-nginx-source)
