@@ -1,15 +1,12 @@
 ---
 - name: create {{ nginx_src_dir }} directory
   file: path={{ nginx_src_dir }} state=directory
-  sudo: yes
 
 - name: download nginx source
-  get_url: url=http://nginx.org/download/nginx-{{ nginx_version }}.tar.gz dest={{ nginx_src_dir }}/nginx-{{ nginx_version }}.tar.gz
-  sudo: yes
+  get_url: url=http://nginx.org/download/nginx-{{ nginx_version }}.tar.gz dest={{ nginx_src_dir }}/nginx-{{ nginx_version }}.tar.gz timeout=120
 
 - name: untar and defeather
   unarchive: src={{ nginx_src_dir }}/nginx-{{ nginx_version }}.tar.gz dest={{ nginx_src_dir }} creates={{ nginx_src_dir }}/nginx-{{ nginx_version }} copy=no
-  sudo: yes
 
 - name: install required yum packages
   yum: name={{ item }} state=installed
@@ -30,45 +27,34 @@
     - make 
     - gcc 
     - perl
-  sudo: yes
 
 - name: install nginx
   command: creates={{ nginx_prefix }} chdir={{ nginx_src_dir }}/nginx-{{ nginx_version }} {{ item }}
   with_items:
   - ./configure --prefix={{ nginx_prefix }} --with-http_ssl_module --with-http_stub_status_module
   - make install
-  sudo: yes
 
 - name: Create symlink to nginx.conf
   file: src={{ nginx_conf }} dest={{ nginx_prefix }}/conf/nginx.conf state=link force=yes
-  sudo: yes
   notify: restart nginx
 
 - name: write init.d/nginx
   template: src=init_nginx.j2 dest=/etc/init.d/nginx mode=0755
-  sudo: yes
   
 - name: create log directory
   file: path=/var/log/nginx state=directory group=mbxapp
-  sudo: yes
 
 - name: Create symlink for logs
   file: src=/var/log/nginx/ dest={{ nginx_prefix }}/logs state=link force=yes group=mbxapp
-  sudo: yes
-
 
 - name: write /etc/snmp/nginx-stats  
   template: src=nginx-stats.j2 dest=/etc/snmp/nginx-stats mode=0755
-  sudo: yes
 
 - name: make sure snmp has nginx line
   lineinfile: dest=/etc/snmp/snmpd.conf line='extend nginx /etc/snmp/nginx-stats' state=present insertafter=EOF
-  sudo: yes
     
 - name: service snmp started and enabled
   service: name=snmpd state=started enabled=yes
-  sudo: yes
     
 - name: service nginx started and enabled
   service: name=nginx state=started enabled=yes
-  sudo: yes

@@ -2,7 +2,7 @@
 galaxy_info:
   author: Toby Broyles
   description: Build nginx from source
-  company:
+  company: Assurant
   license: BSD
   min_ansible_version: 1.6
   platforms:
