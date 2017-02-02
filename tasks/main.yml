@@ -28,11 +28,16 @@
     - gcc 
     - perl
 
+- command: "{{ nginx_prefix }}/sbin/nginx -v"
+  register: result
+  ignore_errors: true
+
 - name: install nginx
-  command: creates={{ nginx_prefix }} chdir={{ nginx_src_dir }}/nginx-{{ nginx_version }} {{ item }}
+  command: chdir={{ nginx_src_dir }}/nginx-{{ nginx_version }} {{ item }}
   with_items:
   - ./configure --prefix={{ nginx_prefix }} --with-http_ssl_module --with-http_stub_status_module
   - make install
+  when: "'{{ nginx_version }}' not in result.stderr or result is undefined"
 
 - name: Create symlink to nginx.conf
   file: src={{ nginx_conf }} dest={{ nginx_prefix }}/conf/nginx.conf state=link force=yes
